@@ -114,9 +114,10 @@
       'z': '🤨', ' ': '🌑'
     };
 
-    const reverseMap = Object.fromEntries(
-      Object.entries(emojiMap).map(([k, v]) => [v, k])
-    );
+    const reverseMap = {};
+    for (let [key, emoji] of Object.entries(emojiMap)) {
+      reverseMap[emoji.codePointAt(0)] = key;
+    }
 
     function playSound() {
       const click = document.getElementById("clickSound");
@@ -128,10 +129,12 @@
       const msg = document.getElementById("message").value.toLowerCase();
       const pass = document.getElementById("password").value;
       if (!pass) return alert("Please enter a password");
+
       let result = '';
       for (let ch of msg) {
         result += emojiMap[ch] || ch;
       }
+
       localStorage.setItem("encryptedPassword", pass);
       localStorage.setItem("encryptedMessage", result);
       document.getElementById("result").innerText = result;
@@ -141,12 +144,16 @@
       const input = document.getElementById("message").value;
       const pass = document.getElementById("password").value;
       const savedPassword = localStorage.getItem("encryptedPassword");
+
       if (!pass) return alert("Please enter password to decrypt");
       if (pass !== savedPassword) return alert("Incorrect password");
+
       let result = '';
-      for (let ch of input) {
-        result += reverseMap[ch] || ch;
+      for (let char of input) {
+        const code = char.codePointAt(0);
+        result += reverseMap[code] || char;
       }
+
       document.getElementById("result").innerText = result;
     }
 
